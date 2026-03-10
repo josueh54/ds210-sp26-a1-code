@@ -60,7 +60,6 @@ impl<T> FastVec<T> {
 
     // Student 1 and Student 2 should implement this together
     // Use the project handout as a guide for this part!
-<<<<<<< HEAD
     pub fn get(&self, i: usize) -> &T 
     {
         if i >= self.len 
@@ -73,17 +72,6 @@ impl<T> FastVec<T> {
             &*ptr
         }
     }
-=======
-    pub fn get(&self, i: usize) -> &T {
-        if i >= self.len {
-            panic!("FastVec: get out of bounds");
-        }
-        unsafe {
-            let ptr = self.ptr_to_data.add(i);
-            &*ptr
-        }
-    }   
->>>>>>> origin/std2part2
 
     // Student 2 should implement this.
     pub fn push(&mut self, t: T) {
@@ -137,6 +125,14 @@ impl<T> FastVec<T> {
     //       cargo run --bin memory
     pub fn clear(&mut self) 
     {
+        unsafe 
+        {
+            for i in 0..self.len 
+            {
+                ptr::read(self.ptr_to_data.add(i));
+            }
+
+        }
         MALLOC.free(self.ptr_to_data as *mut u8);
         self.ptr_to_data = null_mut();
         self.len = 0;
