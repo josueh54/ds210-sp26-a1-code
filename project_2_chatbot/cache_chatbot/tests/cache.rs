@@ -19,14 +19,14 @@ fn slow_cache() {
     // insert 3 new elements.
     for i in 0..3 {
         let evicted = format!("u{}", i + 2);
-        let username: String = format!("u{}", -1 * i);
-        let mut msg = format!("{}", -1 * i);
+        let username: String = format!("u{}", i + 10);
+        let mut msg = format!("{}", i + 10);
 
         cache.insert_chat(username.clone(), msg.clone());
 
         println!("Inserted {} -- should have evicted {}", username, evicted);
-        //assert_eq!(cache.get_chat(&evicted), None);
-        //assert_eq!(cache.get_chat(&username), Some(&mut msg));
+        assert_eq!(cache.get_chat(&evicted), None);
+        assert_eq!(cache.get_chat(&username), Some(&mut msg));
     }
 
     // First two elements are still there.
