@@ -12,6 +12,7 @@ pub struct ChatbotV3 {
     // Think of some kind of data structure that can help you with this.
     model: Llama,
     chat_sessions: HashMap<String, Chat<Llama>>,
+    histories: HashMap<String, Vec<String>>,
 }
 
 impl ChatbotV3 {
@@ -21,6 +22,7 @@ impl ChatbotV3 {
             // Make sure you initialize your struct members here
             model: model,
             chat_sessions: HashMap::new(),
+            histories: HashMap::new(),
         };
     }
 
@@ -50,10 +52,9 @@ impl ChatbotV3 {
 
     #[allow(dead_code)]
     pub fn get_history(&self, username: String) -> Vec<String> {
-        // Extract the chat message history for the given username
-        // Hint: think of how you can retrieve the Chat object for that user, when you retrieve it
-        // you may want to use https://docs.rs/kalosm/0.4.0/kalosm/language/struct.Chat.html#method.session
-        // to then retrieve the history!
-        return Vec::new();
+        match self.histories.get(&username) {
+            Some(history) => history.clone(),
+            None => Vec::new(),
+        }
     }
 }
