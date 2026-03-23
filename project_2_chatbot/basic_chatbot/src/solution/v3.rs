@@ -38,7 +38,7 @@ impl ChatbotV3 {
             }
             None =>
             {
-                let new_chat_session = self.model                
+                let new_chat_session = self.model
                     .chat()
                     .with_system_prompt("The assistant will act like a pirate");
                 self.chat_sessions.insert(username.clone(), new_chat_session);
