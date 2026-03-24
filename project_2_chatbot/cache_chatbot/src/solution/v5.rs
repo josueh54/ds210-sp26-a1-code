@@ -61,23 +61,54 @@ impl ChatbotV5 {
         }
     }
 
-    pub fn get_history(&mut self, username: String) -> Vec<String> {
+    pub fn get_history(&mut self, username: String) -> Vec<String> 
+    {
         let filename = &format!("{}.txt", username);
         let cached_chat = self.cache.get_chat(&username);
 
-        match cached_chat {
-            None => {
+        match cached_chat 
+        {
+            None => 
+            {
                 println!("get_history: {username} is not in the cache!");
                 // TODO: The cache does not have the chat. What should you do?
                 // Your code goes here.
-                return Vec::new();
+                let mut chat_session = self.model
+                    .chat()
+                    .with_system_prompt("The assistant will act like a pirate");
+                
+                match file_library::load_chat_session_from_file(filename)
+                {
+                    None =>
+                    {
+                        return Vec::new();
+                    }
+                    Some(session) =>
+                    {
+                        chat_session = chat_session.with_session(session);
+                    }
+                }
+                let history = chat_session.session().unwrap().history();
+                let mut strings = Vec::new();
+                for message in history
+                {
+                    strings.push(message.content().to_string());
+                }
+                self.cache.insert_chat(username, chat_session);
+                return strings;
             }
-            Some(chat_session) => {
+            Some(chat_session) => 
+            {
                 println!("get_history: {username} is in the cache! Nice!");
                 // TODO: The cache has this chat. What should you do?
                 // Your code goes here.
-                return Vec::new();
-
+                let history = chat_session.session().unwrap().history();
+                let mut strings = Vec::new();
+                for message in history
+                {
+                    strings.push(message.content().to_string());
+                }
+                return strings;
             }
         }
     }
