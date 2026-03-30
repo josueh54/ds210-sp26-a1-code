@@ -2,15 +2,49 @@ use std::collections::HashMap;
 use crate::dataset::{ColumnType, Dataset, Value, Row};
 use crate::query::{Aggregation, Condition, Query};
 
-pub fn filter_dataset(dataset: &Dataset, filter: &Condition) -> Dataset {
-    todo!("Implement this!");
+pub fn filter_dataset(dataset: &Dataset, filter: &Condition) -> Dataset 
+{
+    let mut filtered_dataset = Dataset::new(dataset.columns().clone());
+    for row in dataset.iter() 
+    {
+        if helper_function(row, dataset, filter) 
+        {
+            filtered_dataset.add_row(row.clone());
+        }
+    }
+    return filtered_dataset;
 }
 
-pub fn group_by_dataset(dataset: Dataset, group_by_column: &String) -> HashMap<Value, Dataset> {
-    todo!("Implement this!");
+pub fn group_by_dataset(dataset: Dataset, group_by_column: &String) -> HashMap<Value, Dataset> 
+{
+    let group_by_column_index = dataset.column_index(group_by_column);
+    let columns = dataset.columns().clone();
+    let mut grouped_datasets: HashMap<Value, Dataset> = HashMap::new();
+
+    for row in dataset.into_iter() 
+    {
+        let group_value = row.get_value(group_by_column_index).clone();
+        
+        match grouped_datasets.get_mut(&group_value) 
+        {
+            Some(grouped_dataset) => 
+            {
+                grouped_dataset.add_row(row);
+            },
+            None => 
+            {
+                let mut new_grouped_dataset = Dataset::new(columns.clone());
+                new_grouped_dataset.add_row(row);
+                grouped_datasets.insert(group_value, new_grouped_dataset);
+            }
+        }
+    }
+
+    return grouped_datasets;
 }
 
-pub fn aggregate_dataset(dataset: HashMap<Value, Dataset>, aggregation: &Aggregation) -> HashMap<Value, Value> {
+pub fn aggregate_dataset(dataset: HashMap<Value, Dataset>, aggregation: &Aggregation) -> HashMap<Value, Value> 
+{
     todo!("Implement this!");
 }
 
@@ -33,4 +67,5 @@ pub fn compute_query_on_dataset(dataset: &Dataset, query: &Query) -> Dataset {
         result.add_row(Row::new(vec![grouped_value, aggregation_value]));
     }
     return result;
-}
+} 
+
