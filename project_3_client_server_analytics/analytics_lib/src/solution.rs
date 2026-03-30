@@ -2,6 +2,31 @@ use std::collections::HashMap;
 use crate::dataset::{ColumnType, Dataset, Value, Row};
 use crate::query::{Aggregation, Condition, Query};
 
+//helper function
+fn helper_function(row: &Row, dataset: &Dataset, condition: &Condition) -> bool {
+    match condition {
+        Condition::Equal(column_name, expected_value) => {
+            let col_index = dataset.column_index(column_name);
+            let actual_value = row.get_value(col_index);
+            actual_value == expected_value
+        }
+
+        Condition::Not(inner) => {
+            !helper_function(row, dataset, inner)
+        }
+
+        Condition::And(left, right) => {
+            helper_function(row, dataset, left)
+                && helper_function(row, dataset, right)
+        }
+
+        Condition::Or(left, right) => {
+            helper_function(row, dataset, left)
+                || helper_function(row, dataset, right)
+        }
+    }
+}
+
 pub fn filter_dataset(dataset: &Dataset, filter: &Condition) -> Dataset 
 {
     let mut filtered_dataset = Dataset::new(dataset.columns().clone());
@@ -43,9 +68,46 @@ pub fn group_by_dataset(dataset: Dataset, group_by_column: &String) -> HashMap<V
     return grouped_datasets;
 }
 
-pub fn aggregate_dataset(dataset: HashMap<Value, Dataset>, aggregation: &Aggregation) -> HashMap<Value, Value> 
-{
-    todo!("Implement this!");
+pub fn aggregate_dataset(dataset: HashMap<Value, Dataset>, aggregation: &Aggregation) -> HashMap<Value, Value> {
+    let mut results: HashMap<Value, Value> = HashMap::new();
+    for (group_value, group_dataset) in dataset {
+        match aggregation {
+            Aggregation::Count(column_name) => {
+                let count = group_dataset.len() as i32;
+                results.insert(group_value, Value::Integer(count));
+            }
+
+            Aggregation::Sum(column_name) => {
+                let col_index = group_dataset.column_index(column_name);
+                let mut sum = 0;
+
+                for row in group_dataset.iter() {
+                    if let Value::Integer(v) = row.get_value(col_index) {
+                        sum += *v;
+                    }
+                }
+
+                results.insert(group_value, Value::Integer(sum));
+            }
+
+            Aggregation::Average(column_name) => {
+                let col_index = group_dataset.column_index(column_name);
+                let mut sum = 0;
+                let mut count = 0;
+
+                for row in group_dataset.iter() {
+                    if let Value::Integer(v) = row.get_value(col_index) {
+                        sum += *v;
+                        count += 1;
+                    }
+                }
+
+                let avg = if count > 0 { sum / count } else { 0 };
+                results.insert(group_value, Value::Integer(avg));
+            }
+        }
+    }
+    results
 }
 
 pub fn compute_query_on_dataset(dataset: &Dataset, query: &Query) -> Dataset {
@@ -67,5 +129,4 @@ pub fn compute_query_on_dataset(dataset: &Dataset, query: &Query) -> Dataset {
         result.add_row(Row::new(vec![grouped_value, aggregation_value]));
     }
     return result;
-} 
-
+}
