@@ -2,10 +2,7 @@ use std::collections::HashMap;
 use crate::dataset::{ColumnType, Dataset, Value, Row};
 use crate::query::{Aggregation, Condition, Query};
 
-<<<<<<< HEAD
 //helper function
-=======
->>>>>>> 224cf21 (Student 1 commit)
 fn helper_function(row: &Row, dataset: &Dataset, condition: &Condition) -> bool {
     match condition {
         Condition::Equal(column_name, expected_value) => {

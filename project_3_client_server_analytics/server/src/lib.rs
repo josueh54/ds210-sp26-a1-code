@@ -1,5 +1,4 @@
 extern crate interface;
-
 use analytics_lib::dataset::Dataset;
 use interface::RPCInterface;
 use futures::{future, prelude::*};

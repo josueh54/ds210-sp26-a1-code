@@ -1,6 +1,6 @@
 use std::fmt::{Debug, Display};
 use serde::{Deserialize, Serialize};
-#[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Debug, )]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Debug)]
 pub enum ColumnType {
     String,
     Integer,
@@ -38,8 +38,7 @@ impl Row {
         return self.values;
     }
 }
-
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Dataset {
     columns: Vec<(String, ColumnType)>,
     rows: Vec<Row>,
