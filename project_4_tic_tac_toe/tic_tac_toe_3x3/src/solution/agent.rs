@@ -27,8 +27,7 @@ impl Agent for SolutionAgent {
         for m in moves {
             let mut new_board = board.clone();
             new_board.apply_move(m, player);
-            
-            let (score, _, _) = SolutionAgent::solve(&mut new_board, player.flip());
+            let (score, _, _) = SolutionAgent::solve(&mut new_board, player.flip(), _time_limit);
 
             match player {
                 Player::X => {
