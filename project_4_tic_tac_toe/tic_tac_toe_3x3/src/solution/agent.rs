@@ -6,12 +6,11 @@ use tic_tac_toe_stencil::player::Player;
 pub struct SolutionAgent {}
 
 // Put your solution here.
-impl Agent for SolutionAgent 
-{
+impl Agent for SolutionAgent {
     // Should returns (<score>, <x>, <y>)
     // where <score> is your estimate for the score of the game
     // and <x>, <y> are the position of the move your solution will make.
-fn solve(board: &mut Board, player: Player) -> (i32, usize, usize) {
+    fn solve(board: &mut Board, player: Player) -> (i32, usize, usize) {
         // If you want to make a recursive call to this solution, use
         // `SolutionAgent::solve(...)`
         if board.game_over() {
@@ -48,9 +47,4 @@ fn solve(board: &mut Board, player: Player) -> (i32, usize, usize) {
         }
         (best_score, best_move.0, best_move.1)
     }
-
-
-        // If you want to make a recursive call to this solution, use
-        // `SolutionAgent::solve(...)`
 }
-
